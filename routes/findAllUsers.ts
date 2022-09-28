@@ -1,4 +1,6 @@
 import { Application } from "express"
+import { Error } from "sequelize"
+import { ApiException } from "../types/exception"
 import { wowTemplate } from "../types/template"
 
 const {User} = require('../database/connect')
@@ -9,6 +11,10 @@ module.exports = (app : Application) => {
         .then((users: wowTemplate) => {
             const message : string = 'La liste des users à bien était récuperée.'
             res.json({message, data: users})
+        })
+        .catch((error : ApiException) => {
+            const message = `La liste des users n'a pas pu être récupérée. Réessayer dans quelques instants.`
+            res.status(500).json({message, data : error})
         })
     })
 }

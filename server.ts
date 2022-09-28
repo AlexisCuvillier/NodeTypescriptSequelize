@@ -8,7 +8,7 @@ const app = express()
 
 app.use(cors())
 
-
+import { ApiException } from './types/exception'
 const templateRoutes = require("./routes/templateRoutes")
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
@@ -35,26 +35,32 @@ require('./routes/createUser')(app)
 require('./routes/updateUser')(app)
 require('./routes/deleteUser')(app)
 
+app.use(({res : ApiException}: any) => {
+    const message = 'Impossible de trouver la ressource demandée ! Vous pouvez essayer une autre URL.'
+    return ApiException.status(404).json({message})
+})
 
-const swaggerOptions = {
-    swaggerDefinition: {
-        info: {
-            title: 'TEMPLATE API',
-            description: 'TEMPLATE',
-            contact: {
-                name: 'Best front-end dev EUW'
-            },
-            // servers: [{ url: '/api' }]
-            servers: [{
-                url:`http://localhost:${port}`,
-                description: 'localhost'
-            },],
-        },
-    },
-    apis: [`./routes/*.ts`]
-}
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions)
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
+// const swaggerOptions = {
+//     swaggerDefinition: {
+//         info: {
+//             title: 'TEMPLATE API',
+//             description: 'TEMPLATE',
+//             contact: {
+//                 name: 'Best front-end dev EUW'
+//             },
+//             // servers: [{ url: '/api' }]
+//             servers: [{
+//                 url:`http://localhost:${port}`,
+//                 description: 'localhost'
+//             },],
+//         },
+//     },
+//     apis: [`./routes/*.ts`]
+// }
+
+// const swaggerDocs = swaggerJsDoc(swaggerOptions)
+// app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
 // app.use('/api/users', templateRoutes)

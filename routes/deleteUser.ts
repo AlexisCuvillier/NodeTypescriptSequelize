@@ -1,13 +1,19 @@
 import { Application } from "express";
-import { Wow, wowTemplate } from "../types/template";
+import { ApiException } from "../types/exception";
+import { Wow } from "../types/template";
 
 const { User } = require('../database/connect')
   
 module.exports = (app :Application) => {
   app.delete('/api/users/:id', (req, res) => {
     User.findByPk(req.params.id).then((user: Wow) => {
+      if (user === null){
+        const message = "Le user demandé n'existe pas. Réessayer avec un autre identifiant."
+        return res.status(404).json({message})
+      }
+
       const userDeleted = user;
-      User.destroy({
+     return  User.destroy({
         where: { id: user.id }
       })
       .then(() => {
@@ -15,5 +21,9 @@ module.exports = (app :Application) => {
         res.json({message, data: userDeleted })
       })
     })
+    .catch((error: ApiException) => {
+      const message = `L'utilisateur' n'a pas pu être supprimé. Réessayer dans quelques instants.`;
+      res.status(500).json({ message, data: error });
+    });
   })
 }
