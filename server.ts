@@ -18,7 +18,7 @@ import {Response, Request} from 'express'
 
 app.use(express.json())
 
-sequelize.initDb()
+// sequelize.initDb()
 
 const port = process.env.PORT || 5000
 app.listen(port, () => {

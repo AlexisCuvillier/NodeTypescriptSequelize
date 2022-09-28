@@ -1,6 +1,9 @@
 import { Application } from "express";
+import { ValidationError } from "sequelize";
 import { ApiException } from "../types/exception";
 import { wowTemplate } from "../types/template";
+
+
 
 const { User } = require("../database/connect");
 
@@ -21,6 +24,9 @@ module.exports = (app: Application) => {
           })
       })
       .catch((error: ApiException) => {
+        if(error instanceof ValidationError){
+          return res.status(400).json({message: error.message, data : error})
+        }
         const message = `L'utilisateur' n'a pas pu être modifié. Réessayer dans quelques instants.`;
         res.status(500).json({ message, data: error });
       });
